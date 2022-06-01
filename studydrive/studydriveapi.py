@@ -12,8 +12,8 @@ class StudydriveAPI:
         pass
 
     def login(self, user, passwd):
-        params = {"client_id": 3,
-            "client_secret": "s4lMeCEkNyZcztmpycUlAkSvzAq3gSNjGhGoToDV",
+        params = {"client_id": 8,
+            "client_secret": "7ixMuuCHm8vmMQcHCT3AMc3uMPUhMIBeOmw67QXB",
             "grant_type":"password",
             "username": user,
             "password": passwd}
@@ -29,8 +29,8 @@ class StudydriveAPI:
         return req.json()
 
     def register(self, email, password):
-        params = {"client_id": 3, 
-            "client_secret": "s4lMeCEkNyZcztmpycUlAkSvzAq3gSNjGhGoToDV", 
+        params = {"client_id": 8, 
+            "client_secret": "7ixMuuCHm8vmMQcHCT3AMc3uMPUhMIBeOmw67QXB", 
             "first_name": "", 
             "last_name": "", 
             "locale": "DE", 
