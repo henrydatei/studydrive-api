@@ -57,6 +57,19 @@ class StudydriveAPI:
         params = {"semester_id": semesterID, "university_id": universityID}
         requests.post('{}api/app/v1/semester'.format(self.baseurl), params = params, headers = headers)
 
+    def getUniversities(self):
+        headers = {"authorization": "Bearer " + self.token}
+        params = {"popularity_order_id": 1}
+        req = requests.get('{}api/app/v1/universities'.format(self.baseurl), headers = headers, params = params)
+        req.raise_for_status()
+        return req.json()
+
+    def getSemester(self):
+        headers = {"authorization": "Bearer " + self.token}
+        req = requests.get('{}api/app/v1/semester'.format(self.baseurl), headers = headers)
+        req.raise_for_status()
+        return req.json()
+
     def getMyself(self):
         headers = {"authorization": "Bearer " + self.token}
         req = requests.get('{}api/app/v1/myself'.format(self.baseurl), headers = headers)
