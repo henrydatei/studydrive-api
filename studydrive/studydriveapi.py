@@ -179,6 +179,12 @@ class StudydriveAPI:
         req.raise_for_status()
         return req.json()
 
+    def getCourseDetails(self, courseID):
+        headers = {"authorization": "Bearer " + self.token}
+        req = requests.get('{}api/app/v1/courses/{}/details'.format(self.baseurl, courseID), headers = headers)
+        req.raise_for_status()
+        return req.json()
+
     def getMyQuestions(self):
         headers = {"authorization": "Bearer " + self.token}
         req = requests.get('{}api/app/v1/feed/my_questions_feed'.format(self.baseurl), headers = headers)
