@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import re
 import json
+import hashlib
 
 class StudydriveAPI:
     baseurl = "https://api.studydrive.net/"
@@ -83,8 +84,14 @@ class StudydriveAPI:
         return req.json()
 
     def saveDocument(self, docID, filename): # from https://stackoverflow.com/questions/56950987/download-file-from-url-and-save-it-in-a-folder-python
+        # calculate download-token -> extracted method from decompiled studydrive app
+        # https://www.geeksforgeeks.org/md5-hash-python/
+        str2hash = "studydrive-app-download-7>%jsc" + str(docID)
+        result = hashlib.md5(str2hash.encode())
+
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/documents/{}/download'.format(self.baseurl, docID), headers = headers, stream = True)
+        params = {"converted_file": "false", "download-token": result.hexdigest(), "preview": "false"}
+        req = requests.get('{}api/app/v1/documents/{}/download'.format(self.baseurl, docID), headers = headers, stream = True, params = params)
 
         if req.ok:
             if not os.path.exists(filename):
