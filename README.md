@@ -1,6 +1,8 @@
 # studydrive-api
 A Python Wrapper for the (unofficial) Studydrive API
 
+**Project is currently not working as Studydrive has moved some nessesary keys and logic into a shared library that I can't read because it's compiled C code.**
+
 ## Install
 Run
 ```
