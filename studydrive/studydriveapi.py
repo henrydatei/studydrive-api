@@ -9,8 +9,8 @@ class StudydriveAPI:
     baseurl = "https://api.studydrive.net/"
     token = ""
 
-    def __init__(self):
-        pass
+    def __init__(self, token = ""):
+        self.token = token
 
     def login(self, user, passwd):
         params = {"client_id": 8,

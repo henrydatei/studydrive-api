@@ -9,7 +9,7 @@ README = (HERE / "README.md").read_text()
 
 setuptools.setup(
     name = "studydrive",                     # This is the name of the package
-    version = "0.3",                        # The initial release version
+    version = "0.3.1",                        # The initial release version
     author = "Henry Haustein",                     # Full name of the author
     description = "A Python Wrapper for the (unofficial) Studydrive API",
     packages = setuptools.find_packages(),    # List of all python modules to be installed

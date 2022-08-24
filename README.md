@@ -33,6 +33,13 @@ api.setProgram(universityID = 800, programID = 619, semesterID = 45)
 ```
 Don't forget to verify your email - otherwise some features will not work!
 
+For development reasons I've implemented a third possiblity to "login": If you have a valid token you can directly use it
+```python
+from studydrive import studydriveapi 
+
+api = studydriveapi.StudydriveAPI(token = myToken)
+```
+
 ---
 
 ## Documentation
