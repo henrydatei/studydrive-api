@@ -110,6 +110,7 @@ class StudydriveAPI:
     # type 30 = Übungen & Tutorien
     # type 80 = Zusammenfassungen
     # type 10 = Andere
+    # type 20 = Vorlesungen
     def uploadDocument(self, filename, name, description, professor, courseID, semesterID, type, anonymous = 1, selfMade = 0):
         # get upload hash
         headers = {"authorization": "Bearer " + self.token}
