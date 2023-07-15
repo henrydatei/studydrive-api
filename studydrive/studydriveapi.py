@@ -6,7 +6,7 @@ import json
 import hashlib
 
 class StudydriveAPI:
-    baseurl = "https://api.studydrive.net/"
+    baseurl = "https://gateway.production-01.studydrive.net"
     token = ""
 
     def __init__(self, token = ""):
@@ -25,7 +25,7 @@ class StudydriveAPI:
 
     def getUniversityCourses(self, universityID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/universities/{}/courses'.format(self.baseurl, universityID), headers = headers)
+        req = requests.get('{}/legacy-api/v1/universities/{}/courses'.format(self.baseurl, universityID), headers = headers)
         req.raise_for_status()
         return req.json()
 
@@ -37,7 +37,7 @@ class StudydriveAPI:
             "locale": "DE", 
             "password": password, 
             "username": email}
-        req = requests.post('{}api/app/v1/users/register/email'.format(self.baseurl), params = params)
+        req = requests.post('{}/legacy-api/v1/users/register/email'.format(self.baseurl), params = params)
         req.raise_for_status()
         self.token = req.json()["access_token"]
         return req.json()
@@ -45,41 +45,41 @@ class StudydriveAPI:
     def setNickname(self, nickname):
         headers = {"authorization": "Bearer " + self.token}
         params = {"is_edit": 0, "nickname": nickname}
-        req = requests.post('{}api/app/v1/users/nickname'.format(self.baseurl), headers = headers, params = params)
+        req = requests.post('{}/legacy-api/v1/users/nickname'.format(self.baseurl), headers = headers, params = params)
         req.raise_for_status()
         return req.json()
 
     def setProgram(self, universityID, programID, semesterID):
         headers = {"authorization": "Bearer " + self.token}
         params = {"university_ids[]": universityID}
-        requests.post('{}api/app/v1/universities/subscribe'.format(self.baseurl), params = params, headers = headers)
+        requests.post('{}/legacy-api/v1/universities/subscribe'.format(self.baseurl), params = params, headers = headers)
         params = {"degree_program_ids[]": programID}
-        requests.post('{}api/app/v1/universities/{}/degree_program/subscribe'.format(self.baseurl, universityID), params = params, headers = headers)
+        requests.post('{}/legacy-api/v1/universities/{}/degree_program/subscribe'.format(self.baseurl, universityID), params = params, headers = headers)
         params = {"semester_id": semesterID, "university_id": universityID}
-        requests.post('{}api/app/v1/semester'.format(self.baseurl), params = params, headers = headers)
+        requests.post('{}/legacy-api/v1/semester'.format(self.baseurl), params = params, headers = headers)
 
     def getUniversities(self):
         headers = {"authorization": "Bearer " + self.token}
         params = {"popularity_order_id": 1}
-        req = requests.get('{}api/app/v1/universities'.format(self.baseurl), headers = headers, params = params)
+        req = requests.get('{}/legacy-api/v1/universities'.format(self.baseurl), headers = headers, params = params)
         req.raise_for_status()
         return req.json()
 
     def getSemester(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/semester'.format(self.baseurl), headers = headers)
+        req = requests.get('{}/legacy-api/v1/semester'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getMyself(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/myself'.format(self.baseurl), headers = headers)
+        req = requests.get('{}/legacy-api/v1/myself'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def followUser(self, userID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/profiles/{}/follow'.format(self.baseurl, userID), headers = headers)
+        req = requests.post('{}/legacy-api/v1/profiles/{}/follow'.format(self.baseurl, userID), headers = headers)
         req.raise_for_status()
         return req.json()
 
@@ -91,7 +91,7 @@ class StudydriveAPI:
 
         headers = {"authorization": "Bearer " + self.token}
         params = {"converted_file": "false", "download-token": result.hexdigest(), "preview": "false"}
-        req = requests.get('{}api/app/v1/documents/{}/download'.format(self.baseurl, docID), headers = headers, stream = True, params = params)
+        req = requests.get('{}/legacy-api/v1/documents/{}/download'.format(self.baseurl, docID), headers = headers, stream = True, params = params)
 
         if req.ok:
             if not os.path.exists(filename):
@@ -114,7 +114,7 @@ class StudydriveAPI:
     def uploadDocument(self, filename, name, description, professor, courseID, semesterID, type, anonymous = 1, selfMade = 0):
         # get upload hash
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/documents/upload/init'.format(self.baseurl), headers = headers)
+        req = requests.post('{}/legacy-api/v1/documents/upload/init'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         hash = req.json()["upload_hash"]
 
@@ -130,114 +130,114 @@ class StudydriveAPI:
             'self_made': selfMade, 
             'upload_hash': hash}
         files = {'file': file}
-        req = requests.post('{}api/app/v1/documents/upload'.format(self.baseurl), headers = headers, data = parameters, files = files)
+        req = requests.post('{}/legacy-api/v1/documents/upload'.format(self.baseurl), headers = headers, data = parameters, files = files)
         # print(req.json())
 
         # finalize
         parameters = {'upload_hash': hash}
-        req = requests.post('{}api/app/v1/documents/upload/{}/finalize'.format(self.baseurl, hash), headers = headers, params = parameters)
+        req = requests.post('{}/legacy-api/v1/documents/upload/{}/finalize'.format(self.baseurl, hash), headers = headers, params = parameters)
         return req.json()
 
     def getProfileDocuments(self, profileID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/profiles/{}/documents'.format(self.baseurl, profileID), headers = headers)
+        req = requests.get('{}/legacy-api/v1/profiles/{}/documents'.format(self.baseurl, profileID), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getProfileFlashcards(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/feed/my_flashcard_sets'.format(self.baseurl), headers = headers)
+        req = requests.get('{}/legacy-api/v1/feed/my_flashcard_sets'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getDocumentDetails(self, docID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/documents/{}/details'.format(self.baseurl, docID), headers = headers)
+        req = requests.get('{}/legacy-api/v1/documents/{}/details'.format(self.baseurl, docID), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getMyDocuments(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/feed/my_documents'.format(self.baseurl), headers = headers)
+        req = requests.get('{}/legacy-api/v1/feed/my_documents'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getMyAnswers(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/feed/my_answers_feed'.format(self.baseurl), headers = headers)
+        req = requests.get('{}/legacy-api/v1/feed/my_answers_feed'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getMyStats(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/users/right_sidebar_stats'.format(self.baseurl), headers = headers)
+        req = requests.get('{}/legacy-api/v1/users/right_sidebar_stats'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getInformationAboutQuestion(self, questionType, questionID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/{}/questions/{}'.format(self.baseurl, questionType, questionID), headers = headers)
+        req = requests.get('{}/legacy-api/v1/{}/questions/{}'.format(self.baseurl, questionType, questionID), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getCourseDetails(self, courseID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/courses/{}/details'.format(self.baseurl, courseID), headers = headers)
+        req = requests.get('{}/legacy-api/v1/courses/{}/details'.format(self.baseurl, courseID), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getMyQuestions(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/feed/my_questions_feed'.format(self.baseurl), headers = headers)
+        req = requests.get('{}/legacy-api/v1/feed/my_questions_feed'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def upvoteAnswer(self, answerType, answerID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/{}/answers/{}/upvote'.format(self.baseurl, answerType, answerID), headers = headers)
+        req = requests.post('{}/legacy-api/v1/{}/answers/{}/upvote'.format(self.baseurl, answerType, answerID), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def upvoteQuestion(self, questionType, questionID):
         headers = {"authorization": "Bearer " + self.token}
         params = {'question_id': questionID, 'question_type': questionType}
-        req = requests.post('{}api/app/v1/questions/upvote'.format(self.baseurl), headers=headers, data = params)
+        req = requests.post('{}/legacy-api/v1/questions/upvote'.format(self.baseurl), headers=headers, data = params)
         req.raise_for_status()
         return req.json()
 
     def upvoteDocument(self, fileID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/documents/{}/upvote'.format(self.baseurl, fileID), headers = headers)
+        req = requests.post('{}/legacy-api/v1/documents/{}/upvote'.format(self.baseurl, fileID), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def upvoteFlashcard(self, flashcardID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/flashcards/sets/{}/vote/up'.format(self.baseurl, flashcardID), headers = headers)
+        req = requests.post('{}/legacy-api/v1/flashcards/sets/{}/vote/up'.format(self.baseurl, flashcardID), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def startFlashcard(self, flashcardID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/flashcards/sets/{}/study/start'.format(self.baseurl, flashcardID), headers = headers)
+        req = requests.post('{}/legacy-api/v1/flashcards/sets/{}/study/start'.format(self.baseurl, flashcardID), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def finishFlashcard(self, flashcardID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/flashcards/sets/{}/study/finish'.format(self.baseurl, flashcardID), headers = headers)
+        req = requests.post('{}/legacy-api/v1/flashcards/sets/{}/study/finish'.format(self.baseurl, flashcardID), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getLeftSidebar(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/users/left_sidebar'.format(self.baseurl), headers = headers)
+        req = requests.get('{}/legacy-api/v1/users/left_sidebar'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def setCourseOrder(self, courses):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/community/order'.format(self.baseurl), headers = headers, data = {'context':'course', 'ids[]': courses})
+        req = requests.post('{}/legacy-api/v1/community/order'.format(self.baseurl), headers = headers, data = {'context':'course', 'ids[]': courses})
         req.raise_for_status()
         return req.json()
 
@@ -257,37 +257,37 @@ class StudydriveAPI:
 
     def joinCourse(self, courseID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/courses/{}/join'.format(self.baseurl, courseID), headers = headers)
+        req = requests.post('{}/legacy-api/v1/courses/{}/join'.format(self.baseurl, courseID), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getMyCourses(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/myself/courses'.format(self.baseurl), headers = headers)
+        req = requests.get('{}/legacy-api/v1/myself/courses'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getMajors(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}/api/app/v1/users/majors'.format(self.baseurl), headers = headers)
+        req = requests.get('{}//legacy-api/v1/users/majors'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def getAllMajors(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}/api/app/v1/majors'.format(self.baseurl), headers = headers)
+        req = requests.get('{}//legacy-api/v1/majors'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def giveKarma(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}/api/app/v1/users/give-karma'.format(self.baseurl), headers = headers)
+        req = requests.post('{}//legacy-api/v1/users/give-karma'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
     def courseExpertDashboard(self):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}/api/app/v1/ke/dashboard'.format(self.baseurl), headers = headers)
+        req = requests.get('{}//legacy-api/v1/ke/dashboard'.format(self.baseurl), headers = headers)
         req.raise_for_status()
         return req.json()
 
@@ -300,7 +300,7 @@ class StudydriveAPI:
             parameters = {"sort": "time", "page": page, "semester_from": 0, "semester_until": 0, "type_ids": 0}
             if page > 0:
                 parameters["reference_time"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            req = requests.get('{}api/app/v1/feed/courses/{}/documents'.format(self.baseurl, courseID), headers = headers, params = parameters)
+            req = requests.get('{}/legacy-api/v1/feed/courses/{}/documents'.format(self.baseurl, courseID), headers = headers, params = parameters)
             req.raise_for_status()
             daten = req.json()
             liste.extend(daten["files"])
@@ -311,60 +311,60 @@ class StudydriveAPI:
     def createCourseQuestion(self, text, courseID):
         headers = {"authorization": "Bearer " + self.token}
         params = {"course_id": courseID, "file_id": courseID, "group_id": courseID, "question_type": "course"}
-        req = requests.post('{}api/app/v1/course/questions/init'.format(self.baseurl), headers = headers, params = params)
+        req = requests.post('{}/legacy-api/v1/course/questions/init'.format(self.baseurl), headers = headers, params = params)
         req.raise_for_status()
         questionID = req.json()["question_id"]
 
         params2 = {"is_anonymous": "true", "multi_vote": "false", "question_id": questionID, "question_type": "course", "text": text}
-        req = requests.post('{}api/app/v1/course/questions/{}/create'.format(self.baseurl, questionID), headers = headers, params = params2)
+        req = requests.post('{}/legacy-api/v1/course/questions/{}/create'.format(self.baseurl, questionID), headers = headers, params = params2)
         req.raise_for_status()
         return req.json()
 
     def createGroupQuestion(self, text, groupID):
         headers = {"authorization": "Bearer " + self.token}
         params = {"course_id": groupID, "file_id": groupID, "group_id": groupID, "question_type": "group"}
-        req = requests.post('{}api/app/v1/group/questions/init'.format(self.baseurl), headers = headers, params = params)
+        req = requests.post('{}/legacy-api/v1/group/questions/init'.format(self.baseurl), headers = headers, params = params)
         req.raise_for_status()
         questionID = req.json()["question_id"]
 
         params2 = {"is_anonymous": "true", "multi_vote": "false", "question_id": questionID, "question_type": "group", "text": text}
-        req = requests.post('{}api/app/v1/group/questions/{}/create'.format(self.baseurl, questionID), headers = headers, params = params2)
+        req = requests.post('{}/legacy-api/v1/group/questions/{}/create'.format(self.baseurl, questionID), headers = headers, params = params2)
         req.raise_for_status()
         return req.json()
 
     def createAnswerForCourseQuestion(self, text, questionID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/course/questions/{}/answers/init'.format(self.baseurl, questionID), headers = headers)
+        req = requests.post('{}/legacy-api/v1/course/questions/{}/answers/init'.format(self.baseurl, questionID), headers = headers)
         req.raise_for_status()
         answerID = req.json()["answer_id"]
 
         params2 = {"is_anonymous": "true", "text": text}
-        req = requests.post('{}api/app/v1/course/answers/{}/create'.format(self.baseurl, answerID), headers = headers, params = params2)
+        req = requests.post('{}/legacy-api/v1/course/answers/{}/create'.format(self.baseurl, answerID), headers = headers, params = params2)
         req.raise_for_status()
         return req.json()
 
     def createAnswerForGroupQuestion(self, text, questionID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.post('{}api/app/v1/group/questions/{}/answers/init'.format(self.baseurl, questionID), headers = headers)
+        req = requests.post('{}/legacy-api/v1/group/questions/{}/answers/init'.format(self.baseurl, questionID), headers = headers)
         req.raise_for_status()
         answerID = req.json()["answer_id"]
 
         params2 = {"is_anonymous": "true", "text": text}
-        req = requests.post('{}api/app/v1/group/answers/{}/create'.format(self.baseurl, answerID), headers = headers, params = params2)
+        req = requests.post('{}/legacy-api/v1/group/answers/{}/create'.format(self.baseurl, answerID), headers = headers, params = params2)
         req.raise_for_status()
         return req.text
 
     def setBestAnswer(self, questionID, answerID):
         headers = {"authorization": "Bearer " + self.token}
         params = {'answer_id': answerID}
-        req = requests.post('{}api/app/v1/course/questions/{}/best_answer'.format(self.baseurl, questionID), headers = headers, data = params)
+        req = requests.post('{}/legacy-api/v1/course/questions/{}/best_answer'.format(self.baseurl, questionID), headers = headers, data = params)
         req.raise_for_status()
         return req.json()
 
     def switchNotification(self, id, notificationType):
         headers = {"authorization": "Bearer " + self.token}
         params = {"id": id, "notification_type": notificationType}
-        req = requests.post('{}api/app/v1/users/settings'.format(self.baseurl), headers = headers, data = params)
+        req = requests.post('{}/legacy-api/v1/users/settings'.format(self.baseurl), headers = headers, data = params)
         req.raise_for_status()
         return req.json()
 
@@ -397,12 +397,18 @@ class StudydriveAPI:
     def getGroupQuestions(self, groupID, pageNumber):
         headers = {"authorization": "Bearer " + self.token}
         params = {"group_id": groupID, "page": pageNumber}
-        req = requests.get('{}api/app/v1/feed/groups/{}/discussion'.format(self.baseurl, groupID), headers = headers, params = params)
+        req = requests.get('{}/legacy-api/v1/feed/groups/{}/discussion'.format(self.baseurl, groupID), headers = headers, params = params)
         req.raise_for_status()
         return req.json()
 
     def getAnswersForQuestion(self, questionID):
         headers = {"authorization": "Bearer " + self.token}
-        req = requests.get('{}api/app/v1/group/questions/{}'.format(self.baseurl, questionID), headers = headers)
+        req = requests.get('{}/legacy-api/v1/group/questions/{}'.format(self.baseurl, questionID), headers = headers)
+        req.raise_for_status()
+        return req.json()
+
+    def deleteDocument(self, documentID):
+        headers = {"authorization": "Bearer " + self.token}
+        req = requests.post('{}/legacy-api/v1/documents/{}/delete'.format(self.baseurl, documentID), headers = headers)
         req.raise_for_status()
         return req.json()
