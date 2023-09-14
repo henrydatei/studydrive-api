@@ -3,6 +3,8 @@ A Python Wrapper for the (unofficial) Studydrive API
 
 **Project is currently not working as Studydrive has moved some nessesary keys and logic into a shared library that I can't read because it's compiled C code.**
 
+Solution to that problem would be simulating a web browser with Selenium. I wrote some code for that, not covering all functions but I think it's a good starting point if someone wants to go further. The name of the file is `test_selenium.py`.
+
 ## Install
 Run
 ```
